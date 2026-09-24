@@ -26,10 +26,24 @@ st.markdown("---")
 # --- 2. 側邊欄：資料導入 ---
 st.sidebar.header("📂 資料導入")
 uploaded_file = st.sidebar.file_uploader("請上傳最新業務資料表 (Excel)", type=["xlsx"])
+# 🌟 新增：設定預設檔案名稱 (請確認此檔名與您上傳 GitHub 的檔案完全一致)
+DEFAULT_FILE = "測試用資料表 (3).xlsx"
 
+# 邏輯判斷：決定資料來源
+data_source = None
 if uploaded_file:
-    # 讀取與清理資料
-    df = pd.read_excel(uploaded_file)
+    # 情況一：使用者有手動上傳檔案
+    data_source = uploaded_file
+elif os.path.exists(DEFAULT_FILE):
+    # 情況二：沒有上傳，但系統有找到預設的範例檔
+    data_source = DEFAULT_FILE
+    st.sidebar.success(f"✅ 目前展示預設範例資料")
+
+
+# 將原本的 if uploaded_file: 改成判斷 data_source
+if data_source:
+    # 讀取與清理資料 (這裡把 uploaded_file 換成 data_source)
+    df = pd.read_excel(data_source)
     df.columns = df.columns.str.strip()
     # 🌟 新增：清洗「分行」與「行員」代號，去除小數點並替換特定代號
     if '分行' in df.columns:
